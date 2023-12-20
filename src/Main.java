@@ -7,5 +7,4 @@ public class Main {
         System.out.print("Hello and welcome in the world of Tic Tac Toe!");
 
         }
-    }
 }
