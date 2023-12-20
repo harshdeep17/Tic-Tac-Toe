@@ -5,6 +5,6 @@ public class Main {
         // Press Alt+Enter with your caret at the highlighted text to see how
         // IntelliJ IDEA suggests fixing it.
         System.out.print("Hello and welcome in the world of Tic Tac Toe!");
-
-        }
+        int x=0;
+    }
 }
