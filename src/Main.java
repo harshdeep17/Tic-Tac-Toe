@@ -21,10 +21,10 @@ public class Main {
                 new Symbol('$'), PlayerType.BOT_TYPE,BotDifficultyLevel.EASY));
         Game game=gameController.startGame(4,players,new ArrayList<>());
         System.out.println("Game is starting....");
-//        while(gameController.checkState(game).equals(GameState.IN_PROGRESS)){
-//            gameController.displayBoard(game);
+        while(gameController.checkState(game).equals(GameState.IN_PROGRESS)){
+            gameController.displayBoard(game);
 //            gameController.makeMove(game);
-//        }
+        }
 //        if(gameController.checkState(game).equals(GameState.SUCCESS)){
 //            System.out.println("Winner is some player.");
 //        }else if(gameController.checkState(game).equals(GameState.DRAW)){

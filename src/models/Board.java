@@ -5,11 +5,11 @@ import java.util.List;
 
 public class Board {
     private int size;
-    private List<List<Cell>> board;
+    private List<List<Cell>> grid;
 
     public Board(int dimension) {
-        this.size = size;
-        this.board = new ArrayList<>();
+        this.size = dimension;
+        this.grid = new ArrayList<>();
         for(int i=0;i<dimension;i++){
             List<Cell> row=new ArrayList<>();
             for(int j=0;j<dimension;j++){
@@ -19,7 +19,7 @@ public class Board {
                 cell.setCellState(CellState.EMPTY);
                 row.add(cell);
             }
-            board.add(row);
+            grid.add(row);
         }
     }
 
@@ -32,10 +32,10 @@ public class Board {
     }
 
     public List<List<Cell>> getGrid() {
-        return board;
+        return grid;
     }
 
     public void setGrid(List<List<Cell>> grid) {
-        this.board = grid;
+        this.grid = grid;
     }
 }
