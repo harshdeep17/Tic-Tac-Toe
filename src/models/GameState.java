@@ -2,7 +2,7 @@ package models;
 
 public enum GameState {
     IN_PROGRESS,
-    SUCCESS,
+    ENDED,
     DRAW,
     PAUSE
 }

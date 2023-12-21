@@ -38,4 +38,17 @@ public class Board {
     public void setGrid(List<List<Cell>> grid) {
         this.grid = grid;
     }
+    public void displayBoard(){
+        List<List<Cell>> board=grid;
+//        System.out.println(size);
+        for(int i=0;i<size;i++){
+            for(int j=0;j<size;j++){
+                if(board.get(i).get(j).getCellState().equals(CellState.EMPTY))
+                    System.out.print("-");
+                else
+                    System.out.print(board.get(i).get(j).getPlayer().getSymbol().getaChar());
+            }
+            System.out.println();
+        }
+    }
 }

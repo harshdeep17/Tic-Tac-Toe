@@ -3,32 +3,69 @@ package models;
 import exceptions.BotCountException;
 import exceptions.PlayerCountDimensionMismatchException;
 import exceptions.SymbolCountException;
-import strategies.winningStrategies.WinningStrategies;
+import strategies.winningStrategies.WinningStrategy;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Game {
     private Board board;
     private List<Player> players;
     private List<Move> moves;
     private GameState gameState;
-    private int nextMovePlayerIndex;
+    private int currentMovePlayerIndex;
     private Player winner;
-    private List<WinningStrategies> winningStrategies;
+    private WinningStrategy winningStrategy;
 
-    private Game(int dimension, List<Player> players,
-                List<WinningStrategies> winningStrategies) {
+    private Game(int dimension, List<Player> players, WinningStrategy winningStrategy) {
         this.board = new Board(dimension);
         this.players = players;
         this.moves = new ArrayList<>();
         this.gameState = GameState.IN_PROGRESS;
-        this.nextMovePlayerIndex = 0;
-        this.winningStrategies = winningStrategies;
+        this.currentMovePlayerIndex = 0;
+        this.winningStrategy = winningStrategy;
     }
+    public void displayBoard(){
+        board.displayBoard();
+    }
+    public void makeMove(){
+        //Figure out who's turn is it.
+        Player currentPlayer=players.get(currentMovePlayerIndex);
 
+        // Ask that player to tell which cell to move on
+        Move move=currentPlayer.makeMove(board);
+        moves.add(move);
+        if(winningStrategy.checkWinner(move,board)){
+            setGameState(GameState.ENDED);
+            setWinner(currentPlayer);
+            return;
+        }
+        if(moves.size() == board.getSize() * board.getSize()){
+            // Game has drawn
+            setGameState(GameState.DRAW);
+            return;
+        }
+        currentMovePlayerIndex = (currentMovePlayerIndex + 1) % players.size();
+    }
+    public void undo(){
+        int previousMovePlayerIndex=(currentMovePlayerIndex-1+players.size())%players.size();
+        Player player=players.get(previousMovePlayerIndex);
+        if(player.getType().equals(PlayerType.BOT_TYPE)){
+            return;
+        }
+        System.out.println("Do you want a undo?");
+        System.out.println("Enter 1 for yes 2 for no: ");
+        Scanner scanner=new Scanner(System.in);
+        int flag= scanner.nextInt();
+        if(flag==2)return ;
+        currentMovePlayerIndex=previousMovePlayerIndex;
+        Move move=moves.get(moves.size()-1);
+        Cell cell=move.getCell();
+        moves.remove(moves.size()-1);
+        cell.setCellState(CellState.EMPTY);
+        cell.setPlayer(null);
+        board.getGrid().get(cell.getRow()).set(cell.getCol(),cell);
+        winningStrategy.undo(move,board);
+    }
     public static Builder getBuilder(){
         return new Builder();
     }
@@ -36,7 +73,7 @@ public class Game {
         private int dimension;
         private List<Player> players;
 
-        private List<WinningStrategies> winningStrategies;
+        private WinningStrategy winningStrategy;
 
         public Builder setDimension(int dimension) {
             this.dimension = dimension;
@@ -48,8 +85,8 @@ public class Game {
             return this;
         }
 
-        public Builder setWinningStrategies(List<WinningStrategies> winningStrategies) {
-            this.winningStrategies = winningStrategies;
+        public Builder setWinningStrategy(WinningStrategy winningStrategy) {
+            this.winningStrategy = winningStrategy;
             return this;
         }
         private void validateBotCount() throws BotCountException {
@@ -82,7 +119,7 @@ public class Game {
         }
         public Game build() throws BotCountException, PlayerCountDimensionMismatchException, SymbolCountException {
             validate();
-            return new Game(this.dimension,this.players,this.winningStrategies);
+            return new Game(this.dimension,this.players,this.winningStrategy);
         }
     }
     public Board getBoard() {
@@ -117,12 +154,12 @@ public class Game {
         this.gameState = gameState;
     }
 
-    public int getNextMovePlayerIndex() {
-        return nextMovePlayerIndex;
+    public int getCurrentMovePlayerIndex() {
+        return currentMovePlayerIndex;
     }
 
-    public void setNextMovePlayerIndex(int nextMovePlayerIndex) {
-        this.nextMovePlayerIndex = nextMovePlayerIndex;
+    public void setCurrentMovePlayerIndex(int currentMovePlayerIndex) {
+        this.currentMovePlayerIndex = currentMovePlayerIndex;
     }
 
     public Player getWinner() {
@@ -133,12 +170,12 @@ public class Game {
         this.winner = winner;
     }
 
-    public List<WinningStrategies> getWinningStrategies() {
-        return winningStrategies;
+    public WinningStrategy getWinningStrategy() {
+        return winningStrategy;
     }
 
-    public void setWinningStrategies(List<WinningStrategies> winningStrategies) {
-        this.winningStrategies = winningStrategies;
+    public void setWinningStrategy(WinningStrategy winningStrategy) {
+        this.winningStrategy = winningStrategy;
     }
 
 }
